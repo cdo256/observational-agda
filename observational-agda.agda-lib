@@ -7,4 +7,5 @@ flags:
   --rewriting
   --show-irrelevant
   --lossy-unification
+  --guardedness
 
