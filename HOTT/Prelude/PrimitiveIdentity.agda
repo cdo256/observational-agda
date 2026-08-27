@@ -4,8 +4,12 @@ module HOTT.Prelude.PrimitiveIdentity where
 open import HOTT.Prelude.Universe
 
 infix 4 _≡₀_
-data _≡₀_ {ℓ} {A : Type ℓ} : (x y : A) → Prop ℓ where
+data _≡₀_ {ℓA} {A : Type ℓA} : (x y : A) → Prop ℓA where
   refl₀ : ∀ {x} → x ≡₀ x
+
+-- Alias
+Id₀ : ∀ {ℓA} (A : Type ℓA) (x y : A) → Prop ℓA
+Id₀ A x y = x ≡₀ y
 
 {-# BUILTIN EQUALITY _≡₀_ #-}
 {-# BUILTIN REWRITE _≡₀_ #-}
