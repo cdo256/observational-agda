@@ -1,5 +1,4 @@
-{-# OPTIONS --injective-type-constructors #-}
-{-# OPTIONS --confluence-check #-}
+-- {-# OPTIONS --confluence-check #-}
 module HOTT.Prelude.ObservationalIdentity where
 
 open import HOTT.Prelude.PrimitiveIdentity
@@ -119,6 +118,24 @@ postulate
     
 {-# REWRITE reflΣ #-}
 
+postulate
+  IdLift : ∀ {ℓA ℓA'}
+    → (A : Type ℓA)
+    → (x₀ x₁ : A)
+    → Id (Lift ℓA' A) (lift x₀) (lift x₁)
+    ≡₀ Lift ℓA' (Id A x₀ x₁)
+  
+{-# REWRITE IdLift #-}
+
+postulate
+  reflLift : ∀ {ℓA ℓA'}
+    → (A : Type ℓA)
+    → (x : A)
+    → refl (Lift ℓA' A) (lift x)
+    ≡₀ lift (refl A x)
+  
+{-# REWRITE reflLift #-}
+
 refl₂ : ∀ {ℓA}
   → {A₀ A₁ : Type ℓA}
   → (A₂ : A₀ ≡ A₁)
@@ -127,7 +144,8 @@ refl₂ : ∀ {ℓA}
   → (a₂₁ : A₂ a₀₁ a₁₁) 
   → Id A₀ a₀₀ a₀₁ ≡ Id A₁ a₁₀ a₁₁
 refl₂ {A₀ = A₀} {A₁} A₂ a₂₀ a₂₁ a₀₂ a₁₂ =
-  ap (λ ((a , b) : A₀ × A₁) → A₂ a b) (a₀₂ , a₁₂) a₂₀ a₂₁
+  ap (λ ((a₀ , a₁) : A₀ × A₁) → A₂ a₀ a₁)
+     (a₀₂ , a₁₂) a₂₀ a₂₁
 
 record isBisim {ℓA} {A₀ A₁ : Type ℓA}
   (A₂ : A₀ → A₁ → Type ℓA)
@@ -145,3 +163,117 @@ record isBisim {ℓA} {A₀ A₁ : Type ℓA}
 
 isFibrant : ∀ {ℓA} → Type ℓA → Type ℓA
 isFibrant {ℓA} A = isBisim (refl (Type ℓA) A)
+
+open isBisim public
+
+[_] : ∀ {ℓA ℓB}
+  → {A : Set ℓA} {B : A → Type ℓB}
+  → (f : (a : A) → B a)
+  → ∀ {a₀ a₁} → (a₂ : Id A a₀ a₁)
+  → ap B a₂ (f a₀) (f a₁)
+[_] {A = A} {B} f a₂ =
+  refl ((a : A) → B a) f a₂
+
+_×₂_ : ∀ {ℓA ℓB}
+ → {A₀ A₁ : Type ℓA} {B₀ B₁ : Type ℓB}
+ → (A₂ : A₀ ≡ A₁)
+ → (B₂ : B₀ ≡ B₁)
+ → (A₀ × B₀) ≡ (A₁ × B₁)
+(A₂ ×₂ B₂) (a₀ , b₀) (a₁ , b₁) =
+  A₂ a₀ a₁ × B₂ b₀ b₁
+
+Σ₂ : ∀ {ℓA ℓB}
+ → {A₀ A₁ : Type ℓA}
+ → {B₀ : A₀ → Type ℓB}
+ → {B₁ : A₁ → Type ℓB}
+ → (A₂ : A₀ ≡ A₁)
+ → (B₂ : ∀ {a₀ a₁} (a₂ : A₂ a₀ a₁) → B₀ a₀ ≡ B₁ a₁)
+ → (Σ A₀ B₀) ≡ (Σ A₁ B₁)
+(Σ₂ A₂ B₂) (a₀ , b₀) (a₁ , b₁) =
+  Σ (A₂ a₀ a₁) λ a₂ → B₂ a₂ b₀ b₁
+
+postulate
+  refl₂× :
+    ∀ {A₀ A₁ : Type ℓA} {B₀ B₁ : Type ℓB}
+    → (A₂ : A₀ ≡ A₁)
+    → (B₂ : B₀ ≡ B₁)
+    → {a₀₀ a₀₁ : A₀} {a₁₀ a₁₁ : A₁}
+    → {b₀₀ b₀₁ : B₀} {b₁₀ b₁₁ : B₁}
+    → (a₂₀ : A₂ a₀₀ a₁₀) (a₂₁ : A₂ a₀₁ a₁₁)
+    → (b₂₀ : B₂ b₀₀ b₁₀) (b₂₁ : B₂ b₀₁ b₁₁)
+    → refl₂ (A₂ ×₂ B₂) (a₂₀ , b₂₀) (a₂₁ , b₂₁)
+    ≡₀ (refl₂ A₂ a₂₀ a₂₁ ×₂ refl₂ B₂ b₂₀ b₂₁)
+
+postulate
+  refl₂Σ :
+    ∀ {A₀ A₁ : Type ℓA}
+    → {B₀ : A₀ → Type ℓB}
+    → {B₁ : A₁ → Type ℓB}
+    → (A₂ : A₀ ≡ A₁)
+    → (B₂ : ∀ {a₀ a₁} (a₂ : A₂ a₀ a₁) → B₀ a₀ ≡ B₁ a₁)
+    → {a₀₀ a₀₁ : A₀} {a₁₀ a₁₁ : A₁}
+    → {b₀₀ b₀₁ : B₀} {b₁₀ b₁₁ : B₁}
+    → (a₂₀ : A₂ a₀₀ a₁₀) (a₂₁ : A₂ a₀₁ a₁₁)
+    → (b₂₀ : B₂ b₀₀ b₁₀) (b₂₁ : B₂ b₀₁ b₁₁)
+    → refl₂ (Σ₂ A₂ B₂) (a₂₀ , b₂₀) (a₂₁ , b₂₁)
+    ≡₀ {!refl₂ A₂ a₂₀ a₂₁ ×₂ refl₂ B₂ b₂₀ b₂₁!}
+
+{-# TERMINATING #-} -- FIXME: subst₀ obscures the corecursion.
+isBisim× : ∀ {ℓA} {ℓB}
+  → {A₀ A₁ : Type ℓA} (A₂ : A₀ ≡ A₁)
+  → {B₀ B₁ : Type ℓB} (B₂ : B₀ ≡ B₁)
+  → isBisim A₂
+  → isBisim B₂
+  → isBisim (A₂ ×₂ B₂)
+isBisim× A₂ B₂ isBisimA₂ isBisimB₂ .trr (a₀ , b₀) =
+  isBisimA₂ .trr a₀ , isBisimB₂ .trr b₀
+isBisim× A₂ B₂ isBisimA₂ isBisimB₂ .liftr (a₀ , b₀) =
+  isBisimA₂ .liftr a₀ , isBisimB₂ .liftr b₀
+isBisim× A₂ B₂ isBisimA₂ isBisimB₂ .trl (a₁ , b₁) =
+  isBisimA₂ .trl a₁ , isBisimB₂ .trl b₁
+isBisim× A₂ B₂ isBisimA₂ isBisimB₂ .liftl (a₁ , b₁) =
+  isBisimA₂ .liftl a₁ , isBisimB₂ .liftl b₁
+isBisim× A₂ B₂ isBisimA₂ isBisimB₂ .id (a₂₀ , b₂₀) (a₂₁ , b₂₁) =
+  subst₀ isBisim (sym₀ (refl₂× A₂ B₂ a₂₀ a₂₁ b₂₀ b₂₁))
+         (isBisim×
+           (refl₂ A₂ a₂₀ a₂₁)
+           (refl₂ B₂ b₂₀ b₂₁)
+           (isBisimA₂ .id a₂₀ a₂₁)
+           (isBisimB₂ .id b₂₀ b₂₁))
+
+isFib× : ∀ {ℓA} {ℓB} {A : Type ℓA} {B : Type ℓB}
+  → isFibrant A
+  → isFibrant B
+  → isFibrant (A × B)
+isFib× {A = A} {B} isFibA isFibB =
+  isBisim× (refl _ A) (refl _ B) isFibA isFibB
+
+{-# TERMINATING #-} -- FIXME: subst₀ obscures the corecursion.
+isBisimΣ : ∀ {ℓA} {ℓB}
+  → {A₀ A₁ : Type ℓA} (A₂ : A₀ ≡ A₁)
+  → {B₀ B₁ : Type ℓB} (B₂ : B₀ ≡ B₁)
+  → isBisim A₂
+  → isBisim B₂
+  → isBisim (Σ₂ A₂ B₂)
+isBisimΣ A₂ B₂ isBisimA₂ isBisimB₂ .trr (a₀ , b₀) =
+  isBisimA₂ .trr a₀ , isBisimB₂ .trr b₀
+isBisimΣ A₂ B₂ isBisimA₂ isBisimB₂ .liftr (a₀ , b₀) =
+  isBisimA₂ .liftr a₀ , isBisimB₂ .liftr b₀
+isBisimΣ A₂ B₂ isBisimA₂ isBisimB₂ .trl (a₁ , b₁) =
+  isBisimA₂ .trl a₁ , isBisimB₂ .trl b₁
+isBisimΣ A₂ B₂ isBisimA₂ isBisimB₂ .liftl (a₁ , b₁) =
+  isBisimA₂ .liftl a₁ , isBisimB₂ .liftl b₁
+isBisimΣ A₂ B₂ isBisimA₂ isBisimB₂ .id (a₂₀ , b₂₀) (a₂₁ , b₂₁) =
+  subst₀ isBisim (sym₀ (refl₂× A₂ B₂ a₂₀ a₂₁ b₂₀ b₂₁))
+         (isBisimΣ
+           (refl₂ A₂ a₂₀ a₂₁)
+           (refl₂ B₂ b₂₀ b₂₁)
+           (isBisimA₂ .id a₂₀ a₂₁)
+           (isBisimB₂ .id b₂₀ b₂₁))
+
+isFibΣ : ∀ {ℓA} {ℓB} {A : Type ℓA} {B : Type ℓB}
+  → isFibrant A
+  → isFibrant B
+  → isFibrant (A × B)
+isFibΣ {A = A} {B} isFibA isFibB =
+  isBisimΣ (refl _ A) (refl _ B) isFibA isFibB
