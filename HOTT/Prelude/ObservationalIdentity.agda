@@ -1,4 +1,5 @@
--- {-# OPTIONS --confluence-check #-}
+{-# OPTIONS --confluence-check #-}
+{-# OPTIONS --allow-unsolved-metas #-}
 module HOTT.Prelude.ObservationalIdentity where
 
 open import HOTT.Prelude.PrimitiveIdentity
@@ -22,16 +23,30 @@ postulate
 
 postulate
   reflType : ∀ {ℓA}
-    → (A : Type ℓA)
-    → refl (Type ℓA) A
-    ≡₀ (λ (a₀ a₁ : A) → Id A a₀ a₁)
+    → refl (Type ℓA)
+    ≡₀ Id
     
 {-# REWRITE reflType #-}
+
+record Retract {ℓA ℓB} (A : Type ℓA) (B : Type ℓB) : Type (ℓA ⊔ ℓB) where
+  field
+    to : A → B
+    fro : B → A
+    inv : (b : B) → to (fro b) ≡₀ b
 
 _≡_ : {A : Type ℓA}
   → (a₀ : A) (a₁ : A)
   → Type ℓA
 a₀ ≡ a₁ = Id _ a₀ a₁
+
+
+Id_eq : ∀ {ℓA}
+  → {A₀ A₁ : Type ℓA} (A₂ : A₀ ≡ A₁)
+  → {a₀₀ a₁₀ : A₀} {a₀₁ a₁₁ : A₁}
+  → (a₀₂ : A₂ a₀₀ a₀₁)
+  → (a₁₂ : A₂ a₁₀ a₁₁)
+  → (a₂₂ : Id {!!} {!!} {!!})
+  → {!!}
 
 -- Required for bootstrapping.
 postulate
@@ -136,6 +151,17 @@ postulate
   
 {-# REWRITE reflLift #-}
 
+Id₂ : ∀ {ℓA}
+  → {A₀ A₁ : Type ℓA}
+  → (A₂ : A₀ ≡ A₁)
+  → {a₀₀ a₀₁ : A₀} {a₁₀ a₁₁ : A₁}
+  → (a₂₀ : A₂ a₀₀ a₁₀) 
+  → (a₂₁ : A₂ a₀₁ a₁₁) 
+  → (a₀₂ : Id A₀ a₀₀ a₀₁)
+  → (a₁₂ : Id A₁ a₁₀ a₁₁)
+  → Type (lsuc ℓA)
+Id₂ {ℓA} A₂ a₂₀ a₂₁ a₀₂ a₁₂ = Type ℓA
+
 refl₂ : ∀ {ℓA}
   → {A₀ A₁ : Type ℓA}
   → (A₂ : A₀ ≡ A₁)
@@ -146,6 +172,19 @@ refl₂ : ∀ {ℓA}
 refl₂ {A₀ = A₀} {A₁} A₂ a₂₀ a₂₁ a₀₂ a₁₂ =
   ap (λ ((a₀ , a₁) : A₀ × A₁) → A₂ a₀ a₁)
      (a₀₂ , a₁₂) a₂₀ a₂₁
+
+postulate
+  refl₂Refl : ∀ {ℓA}
+    → (A : Type ℓA)
+    → {a₀ a₁ : A}
+    → (a₀₂ : Id A a₀ a₁)
+    → (a₁₂ : Id A a₀ a₁)
+    -- → refl₂ (Id A) (refl A a₀) (refl A a₁) a₀₂ a₁₂
+    → ap (λ ((a₀ , a₁) : A × A) → Id A a₀ a₁)
+         (a₀₂ , a₁₂) (refl A a₀) (refl A a₁)
+    ≡₀ refl (Type ℓA) (Id A a₀ a₁) a₀₂ a₁₂
+
+{-# REWRITE refl₂Refl #-}
 
 record isBisim {ℓA} {A₀ A₁ : Type ℓA}
   (A₂ : A₀ → A₁ → Type ℓA)
@@ -174,14 +213,6 @@ open isBisim public
 [_] {A = A} {B} f a₂ =
   refl ((a : A) → B a) f a₂
 
-_×₂_ : ∀ {ℓA ℓB}
- → {A₀ A₁ : Type ℓA} {B₀ B₁ : Type ℓB}
- → (A₂ : A₀ ≡ A₁)
- → (B₂ : B₀ ≡ B₁)
- → (A₀ × B₀) ≡ (A₁ × B₁)
-(A₂ ×₂ B₂) (a₀ , b₀) (a₁ , b₁) =
-  A₂ a₀ a₁ × B₂ b₀ b₁
-
 Σ₂ : ∀ {ℓA ℓB}
  → {A₀ A₁ : Type ℓA}
  → {B₀ : A₀ → Type ℓB}
@@ -191,6 +222,13 @@ _×₂_ : ∀ {ℓA ℓB}
  → (Σ A₀ B₀) ≡ (Σ A₁ B₁)
 (Σ₂ A₂ B₂) (a₀ , b₀) (a₁ , b₁) =
   Σ (A₂ a₀ a₁) λ a₂ → B₂ a₂ b₀ b₁
+
+_×₂_ : ∀ {ℓA ℓB}
+ → {A₀ A₁ : Type ℓA} {B₀ B₁ : Type ℓB}
+ → (A₂ : A₀ ≡ A₁)
+ → (B₂ : B₀ ≡ B₁)
+ → (A₀ × B₀) ≡ (A₁ × B₁)
+A₂ ×₂ B₂ = Σ₂ A₂ (λ _ → B₂)
 
 postulate
   refl₂× :
@@ -204,6 +242,21 @@ postulate
     → refl₂ (A₂ ×₂ B₂) (a₂₀ , b₂₀) (a₂₁ , b₂₁)
     ≡₀ (refl₂ A₂ a₂₀ a₂₁ ×₂ refl₂ B₂ b₂₀ b₂₁)
 
+  refl₂Σ :
+    ∀ {A₀ A₁ : Type ℓA}
+    → {B₀ : A₀ → Type ℓB}
+    → {B₁ : A₁ → Type ℓB}
+    → (A₂ : A₀ ≡ A₁)
+    → (B₂ : ∀ {a₀ a₁} (a₂ : A₂ a₀ a₁) → B₀ a₀ ≡ B₁ a₁)
+    → {a₀₀ a₀₁ : A₀} {a₁₀ a₁₁ : A₁}
+    → (a₂₀ : A₂ a₀₀ a₁₀) (a₂₁ : A₂ a₀₁ a₁₁)
+    → {b₀₀ : B₀ a₀₀} {b₁₀ : B₁ a₁₀}
+    → {b₀₁ : B₀ a₀₁} {b₁₁ : B₁ a₁₁}
+    → (b₂₀ : B₂ a₂₀ b₀₀ b₁₀) (b₂₁ : B₂ a₂₁ b₀₁ b₁₁)
+    → refl₂ (Σ₂ A₂ B₂) (a₂₀ , b₂₀) (a₂₁ , b₂₁)
+    ≡₀ (Σ₂ (refl₂ A₂ a₂₀ a₂₁) λ {a₀₂} {a₁₂} a₂₂ b₀₂ b₁₂ → {!!})
+
+{-
 postulate
   refl₂Σ :
     ∀ {A₀ A₁ : Type ℓA}
@@ -277,3 +330,4 @@ isFibΣ : ∀ {ℓA} {ℓB} {A : Type ℓA} {B : Type ℓB}
   → isFibrant (A × B)
 isFibΣ {A = A} {B} isFibA isFibB =
   isBisimΣ (refl _ A) (refl _ B) isFibA isFibB
+-}

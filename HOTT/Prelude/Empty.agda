@@ -32,6 +32,9 @@ _ : ∀ {ℓA} (A : Type ℓA) (x₀ x₁ : ¬ A)
       → x₀ a₀ ≡ x₁ a₁)
 _ = λ _ _ _ → refl₀
 
+_≢_ : ∀ {ℓA} {A : Type ℓA} (x₀ x₁ : A) → Type ℓA
+x₀ ≢ x₁ = ¬ (x₀ ≡ x₁)
+
 {-
 isFib¬ : ∀ {ℓA} (A : Type ℓA)
   → isFibrant A
