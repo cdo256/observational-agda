@@ -1,23 +1,95 @@
-open import HOTT.Prelude
+open import HOTT.Universe
 
-module HOTT.PrimitiveIdentity ⦃ pathElim* : PathElim₀ ⦄ where
+module HOTT.Identity.Primitive.Base where
 
-module PE = PathElim₀ pathElim*
+open import HOTT.Universe
 
-open import HOTT.Prelude.PrimitiveIdentity public
+infix 4 _≡₀_
+data _≡₀_ {ℓA} {A : Type ℓA} : (x y : A) → Set ℓA where
+  refl₀ : ∀ {x} → x ≡₀ x
 
-abstract
-  J₀ : ∀ {ℓA ℓB} {A : Set ℓA} {x : A}
-    → (B : (y : A) → x ≡₀ y → Set ℓB)
-    → {y : A} (p : x ≡₀ y) → B x refl₀ → B y p
-  J₀ = PE.J₀
-  J₀-refl : ∀ {ℓA ℓB} {A : Set ℓA} {x : A}
-          → (B : (y : A) → x ≡₀ y → Set ℓB)
-          → (Brefl : B x refl₀)
-          → J₀ B refl₀ Brefl ≡₀ Brefl
-  J₀-refl = PE.J₀-refl
-{-# REWRITE J₀-refl #-}
+-- Alias
+Id₀ : ∀ {ℓA} (A : Type ℓA) (x y : A) → Set ℓA
+Id₀ A x y = x ≡₀ y
 
+{-# BUILTIN EQUALITY _≡₀_ #-}
+{-# BUILTIN REWRITE _≡₀_ #-}
+
+sym₀ : ∀ {ℓA} {A : Type ℓA}
+  → {x y : A} → x ≡₀ y
+  → y ≡₀ x
+sym₀ refl₀ = refl₀
+
+trans₀ : ∀ {ℓA} {A : Type ℓA}
+  → {x y z : A}
+  → x ≡₀ y
+  → y ≡₀ z
+  → x ≡₀ z
+trans₀ refl₀ p = p
+
+ap₀ : ∀ {ℓA ℓB} {A : Type ℓA}
+  → {B : Type ℓB}
+  → (f : A → B)
+  → {x y : A}
+  → x ≡₀ y
+  → f x ≡₀ f y
+ap₀ B refl₀ = refl₀
+
+ap²₀ : ∀ {ℓA ℓB ℓC}
+  → {A : Type ℓA}
+  → {B : Type ℓB}
+  → {C : Type ℓC}
+  → (f : A → B → C)
+  → {a₀ a₁ : A}
+  → (a₂ : a₀ ≡₀ a₁)
+  → {b₀ b₁ : B}
+  → (b₂ : b₀ ≡₀ b₁)
+  → f a₀ b₀ ≡₀ f a₁ b₁
+ap²₀ f refl₀ refl₀ = refl₀
+
+subst₀ : ∀ {ℓA ℓB} {A : Type ℓA}
+  → (B : A → Type ℓB)
+  → {x y : A} → x ≡₀ y
+  → B x → B y
+subst₀ B refl₀ b = b
+
+subst⁻₀ : ∀ {ℓA ℓB} {A : Type ℓA}
+  → (B : A → Type ℓB)
+  → {x y : A} → x ≡₀ y
+  → B y → B x
+subst⁻₀ B p b = subst₀ B (sym₀ p) b
+
+transport₀ : ∀ {ℓA}
+  → {A B : Type ℓA} → A ≡₀ B
+  → A → B
+transport₀ p x = subst₀ (λ A → A) p x
+
+subst-refl₀ : ∀ {ℓA ℓB} {A : Type ℓA}
+  → (B : A → Type ℓB)
+  → {x : A}
+  → (b : B x) → subst₀ B refl₀ b ≡₀ b
+subst-refl₀ B b = refl₀
+
+{-
+mktransport₀ : ∀ {ℓA}
+  → {A : Type (lsuc ℓA)} → (p : A ≡₀ Type ℓA)
+  → (B : A)
+  → (b : B)
+  → transport₀ p B
+mktransport₀ refl₀ B = subst⁻₀ (λ A → A) (subst-refl₀ (λ z → z) B) {!!}
+-}
+
+J₀ : ∀ {ℓA ℓB} {A : Set ℓA} {x : A}
+  → (B : (y : A) → x ≡₀ y → Set ℓB)
+  → {y : A} (p : x ≡₀ y) → B x refl₀ → B y p
+J₀ = {!!}
+J₀-refl : ∀ {ℓA ℓB} {A : Set ℓA} {x : A}
+        → (B : (y : A) → x ≡₀ y → Set ℓB)
+        → (Brefl : B x refl₀)
+        → J₀ B refl₀ Brefl ≡₀ Brefl
+J₀-refl = {!!}
+
+{-
 isSetSetˢ : {A : Set ℓA} {x y : A} (p q : x ≡ˢ y) → p ≡ˢ q
 isSetSetˢ reflˢ reflˢ = reflˢ
 
@@ -44,7 +116,9 @@ Jˢ-refl : {A : Set ℓA} {x : A}
       → (Brefl : B x reflˢ)
       → Jˢ B reflˢ Brefl ≡ˢ Brefl
 Jˢ-refl B Brefl = reflˢ
+-}
 
+{-
 sym : ∀ {ℓ} {A : Set ℓ} {x y : A} → x ≡ y → y ≡ x
 sym refl = refl
 
@@ -343,3 +417,4 @@ subst-cong
   → subst (λ x → C (f x)) p c
   ≡ subst C (cong f p) c
 subst-cong C f refl c = refl
+-}

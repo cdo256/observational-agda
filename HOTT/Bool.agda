@@ -1,12 +1,12 @@
 {-# OPTIONS --allow-unsolved-metas #-}
-module HOTT.Prelude.Bool where
+module HOTT.Bool where
 
-open import HOTT.Prelude.Universe
-open import HOTT.Prelude.PrimitiveIdentity
-open import HOTT.Prelude.ObservationalIdentity
-open import HOTT.Prelude.Empty
-open import HOTT.Prelude.Unit
-open import HOTT.Prelude.Iso
+open import HOTT.Universe
+open import HOTT.PrimitiveIdentity
+open import HOTT.ObservationalIdentity
+open import HOTT.Empty
+open import HOTT.Unit
+open import HOTT.Iso
 
 data Bool : Type where
   false : Bool

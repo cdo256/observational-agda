@@ -1,4 +1,4 @@
-module HOTT.Prelude.Universe where
+module HOTT.Universe where
 
 open import Agda.Primitive renaming (lzero to ℓ0; Set to Type; Setω to Typeω) public
 

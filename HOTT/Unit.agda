@@ -1,8 +1,8 @@
-module HOTT.Prelude.Unit where
+module HOTT.Unit where
 
-open import HOTT.Prelude.Universe
-open import HOTT.Prelude.PrimitiveIdentity
-open import HOTT.Prelude.ObservationalIdentity
+open import HOTT.Universe
+open import HOTT.PrimitiveIdentity
+open import HOTT.ObservationalIdentity
 
 data ⊤ : Type where
   tt : ⊤

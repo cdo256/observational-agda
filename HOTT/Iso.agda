@@ -1,11 +1,11 @@
 {-# OPTIONS --allow-unsolved-metas #-}
-module HOTT.Prelude.Iso where
+module HOTT.Iso where
 
-open import HOTT.Prelude.Universe
-open import HOTT.Prelude.PrimitiveIdentity
-open import HOTT.Prelude.ObservationalIdentity
-open import HOTT.Prelude.Empty
-open import HOTT.Prelude.Unit
+open import HOTT.Universe
+open import HOTT.PrimitiveIdentity
+open import HOTT.ObservationalIdentity
+open import HOTT.Empty
+open import HOTT.Unit
 
 -- Half-adjoint equiv
 record Iso {ℓA ℓB} (A : Type ℓA) (B : Type ℓB) : Type (ℓA ⊔ ℓB) where
