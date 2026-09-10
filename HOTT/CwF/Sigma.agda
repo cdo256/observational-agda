@@ -16,6 +16,7 @@ postulate
     → (B : Ty (Γ ▹ A))
     → (Σ A B) [ σ ]ᵀ
     ≡ (Σ (A [ σ ]ᵀ) (B [ σ ↑ A ]ᵀ))
+
 {-# REWRITE Σ[] #-}
 
 postulate
@@ -25,15 +26,6 @@ postulate
     → (a : Tm Γ A)
     → (b : Tm Γ (B [ id , a ]ᵀ))
     → Tm Γ (Σ A B)
-
-postulate
-  []∘ : ∀ {Γ Δ}
-    → (σ : Sub Δ Γ)
-    → {A : Ty Γ}
-    → (B : Ty (Γ ▹ A))
-    → (a : Tm Γ A)
-    → B [ (id , a) ∘ σ ]ᵀ
-    ≡ B [ (σ ↑ A) ∘ (id , a [ σ ]ᵗ) ]ᵀ
 
 postulate
   Σi[] : ∀ {Γ Δ}
