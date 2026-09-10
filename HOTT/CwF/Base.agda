@@ -7,20 +7,17 @@ open import Agda.Builtin.Equality
 
 {-# BUILTIN REWRITE _≡_ #-}
 
-variable
-  ℓCon ℓSub ℓTy ℓTm : Level
-
 ------------------------------------------------------------------------
 -- The four sorts
 
 postulate
-  Con : Set ℓCon
+  Con : Set 
 
-  Sub : Con → Con → Set ℓSub
+  Sub : Con → Con → Set 
 
-  Ty  : Con → Set ℓTy
+  Ty  : Con → Set 
 
-  Tm  : (Γ : Con) → Ty Γ → Set ℓTm
+  Tm  : (Γ : Con) → Ty Γ → Set 
 
 ------------------------------------------------------------------------
 -- Category of contexts and substitutions

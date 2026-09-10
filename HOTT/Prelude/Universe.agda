@@ -1,6 +1,10 @@
-module HOTT.Universe where
+module HOTT.Prelude.Universe where
 
-open import Agda.Primitive renaming (lzero to ℓ0; Set to Type; Setω to Typeω) public
+open import Agda.Primitive
+  renaming
+    ( lzero to ℓ0
+    ; Set to Type
+    ; Setω to Typeω) public
 
 ℓ1 = lsuc ℓ0
 ℓ2 = lsuc ℓ1
