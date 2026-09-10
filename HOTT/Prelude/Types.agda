@@ -9,6 +9,12 @@ record Box (A : Prop ℓA) : Type ℓA where
 
 open Box public
 
+record Boxᵖ (A : Prop ℓA) : SSet ℓA where
+  constructor box
+  field unbox : A
+
+open Boxᵖ public
+
 data ⊥ˢ : Type where
 ⊥ˢ* : Type ℓA
 ⊥ˢ* = Lift _ ⊥ˢ

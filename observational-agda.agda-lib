@@ -2,10 +2,10 @@ name: observational-agda
 depend:
 include: .
 flags:
-  --with-K
   --prop
   --rewriting
   --show-irrelevant
   --lossy-unification
   --guardedness
+  --two-level
 
