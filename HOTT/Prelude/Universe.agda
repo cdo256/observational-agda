@@ -18,12 +18,6 @@ record Lift ℓA' (A : Type ℓA) : Type (ℓA ⊔ ℓA') where
 
 open Lift public
 
-record LiftS ℓA' (A : SSet ℓA) : SSet (ℓA ⊔ ℓA') where
-  constructor lifts
-  field lowers : A
-
-open Lift public
-
 record LiftP ℓA' (A : Prop ℓA) : Prop (ℓA ⊔ ℓA') where
   constructor liftp
   field lowerp : A
