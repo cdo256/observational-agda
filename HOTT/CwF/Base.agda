@@ -1,5 +1,3 @@
-{-# OPTIONS --rewriting #-}
-
 module HOTT.CwF.Base where
 
 open import HOTT.Prelude
