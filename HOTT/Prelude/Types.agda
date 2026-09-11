@@ -9,14 +9,17 @@ record Box (A : Prop ℓA) : Type ℓA where
 
 open Box public
 
-data ⊥ˢ : Type where
-⊥ˢ* : Type ℓA
-⊥ˢ* = Lift _ ⊥ˢ
+data ⊥ : Type where
+⊥* : Type ℓA
+⊥* = Lift _ ⊥
 
-data ⊤ˢ : Type where
-  tt : ⊤ˢ
-⊤ˢ* : Type ℓA
-⊤ˢ* = Lift _ ⊤ˢ
+absurd : ∀ {ℓA} {A : Type ℓA} → ⊥ → A
+absurd ()
+
+data ⊤ : Type where
+  tt : ⊤
+⊤* : Type ℓA
+⊤* = Lift _ ⊤
 
 pattern tt* = lift tt
 

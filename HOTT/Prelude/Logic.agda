@@ -1,5 +1,5 @@
 open import HOTT.Prelude.Universe
-open import HOTT.Prelude.Types
+open import HOTT.Prelude.Types hiding (⊥; ⊤; ⊥*; ⊤*)
 open import HOTT.Prelude.Truncation
 open import HOTT.Prelude.Identity
 

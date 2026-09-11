@@ -4,12 +4,15 @@ module HOTT.Prelude.Identity where
 open import HOTT.Prelude.Universe
 open import HOTT.Prelude.Types
 
-infix 4 _≡_
+infix 4 _≡_ _≢_
 data _≡_ {ℓ} {A : Type ℓ} : (x y : A) → Type ℓ where
   refl : ∀ {x} → x ≡ x
 
 {-# BUILTIN EQUALITY _≡_ #-}
 {-# BUILTIN REWRITE _≡_ #-}
+
+_≢_ : ∀ {A : Type} → (x y : A) → Type
+x ≢ y = x ≡ y → ⊥
 
 J : ∀ {ℓA ℓB} {A : Type ℓA} {x : A}
   → (B : (y : A) → x ≡ y → Type ℓB)

@@ -4,7 +4,7 @@ open import HOTT.Prelude.Universe
 open import HOTT.Prelude.Types
 open import HOTT.Prelude.Truncation
 open import HOTT.Prelude.Identity
-open import HOTT.Prelude.Logic
+open import HOTT.Prelude.Logic hiding (⊥; ⊤)
 
 data Dec (A : Type ℓA) : Type ℓA where
   yes : A → Dec A

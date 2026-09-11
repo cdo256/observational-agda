@@ -1,32 +1,53 @@
 module HOTT.CwF.Sub where
 
 open import HOTT.Prelude hiding (_,_)
-open import HOTT.CwF.Base
-open import HOTT.CwF.Con
+open import HOTT.CwF.Cube
+open import HOTT.CwF.Sorts
+
+infixr 20 _,_
+infixl 25 _▹_
+infixl 30 _[_]ᵀ _[_]ᵗ
+infixr 40 _∘_
+
+postulate
+  ∙ : ∀ {n} → Con n
+
+  ε : ∀ {n}
+    → {Γ : Con n}
+    → Sub Γ ∙
+
+  εη : ∀ {n}
+    → {Γ : Con n}
+    → (σ : Sub Γ ∙)
+    → σ ≡ ε
+
+postulate
+  _▹_ : ∀ {n}
+    →(Γ : Con n)
+    → Ty Γ
+    → Con n
 
 ------------------------------------------------------------------------
 -- Category of contexts and substitutions
 
 postulate
-  id : ∀ {Γ}
+  id : ∀ {n} {Γ : Con n}
     → Sub Γ Γ
 
-  _∘_ : ∀ {Γ Δ Θ}
+  _∘_ : ∀ {n} {Γ Δ Θ : Con n}
     → Sub Δ Γ
     → Sub Θ Δ
     → Sub Θ Γ
 
-infixr 40 _∘_
-
 postulate
-  idl : ∀ {Γ Δ} (σ : Sub Δ Γ)
+  idl : ∀ {n} {Γ Δ : Con n} (σ : Sub Δ Γ)
     → id ∘ σ ≡ σ
 
-  idr : ∀ {Γ Δ} (σ : Sub Δ Γ)
+  idr : ∀ {n} {Γ Δ : Con n} (σ : Sub Δ Γ)
     → σ ∘ id ≡ σ
 
   assoc
-    : ∀ {Γ Δ Θ Ξ}
+    : ∀ {n} {Γ Δ Θ Ξ : Con n}
     → (σ : Sub Δ Γ)
     → (δ : Sub Θ Δ)
     → (ν : Sub Ξ Θ)
@@ -34,98 +55,75 @@ postulate
 
 {-# REWRITE idl idr assoc #-}
 
-{-
-Then you must also solve the identity and pentagon monoidal laws, for instance both paths:
-
-A [ σ ∘ id ]
-  ≡⟨ A [ idr ] ⟩
-A [ σ ]
-
-A [ σ ∘ id ]
-  ≡⟨ Ty-∘ ⟩
-A [ σ ] [ id ]
-  ≡⟨ Ty-id ⟩
-A [ σ ]
-
-must be equal.
-
-This is easy under UIP of course. I did want to avoid UIP here though.
--}
 
 ------------------------------------------------------------------------
 -- Substitution into types
 
 postulate
-  _[_]ᵀ : ∀ {Γ Δ}
+  _[_]ᵀ : ∀ {n} {Γ Δ : Con n}
     → Ty Γ
     → Sub Δ Γ
     → Ty Δ
 
-infixl 50 _[_]ᵀ
-
 postulate
-  Ty-id : ∀ {Γ}
+  [id]ᵀ : ∀ {n} {Γ : Con n}
     → (A : Ty Γ)
     → A [ id ]ᵀ ≡ A
 
-  Ty-∘
-    : ∀ {Γ Δ Θ}
+  [∘]ᵀ
+     : ∀ {n} {Γ Δ Θ : Con n}
     → (A : Ty Γ)
     → (σ : Sub Δ Γ)
     → (δ : Sub Θ Δ)
     → (A [ σ ]ᵀ) [ δ ]ᵀ ≡ A [ σ ∘ δ ]ᵀ
 
-{-# REWRITE Ty-id Ty-∘ #-}
+{-# REWRITE [id]ᵀ [∘]ᵀ #-}
 
 ------------------------------------------------------------------------
 -- Substitution into terms
 
 postulate
-  _[_]ᵗ : ∀ {Γ Δ}
+  _[_]ᵗ : ∀ {n} {Γ Δ : Con n}
     → {A : Ty Γ}
     → Tm Γ A
     → (σ : Sub Δ Γ)
     → Tm Δ (A [ σ ]ᵀ)
 
-infixl 50 _[_]ᵗ
-
 postulate
-  Tm-id
-    : ∀ {Γ} {A : Ty Γ}
+  [id]ᵗ
+    : ∀ {n} {Γ : Con n} {A : Ty Γ}
     → (t : Tm Γ A)
     → t [ id ]ᵗ ≡ t
 
-  Tm-∘
-    : ∀ {Γ Δ Θ} {A : Ty Γ}
+  [∘]ᵗ
+    : ∀ {n} {Γ Δ Θ : Con n} {A : Ty Γ}
     → (t : Tm Γ A)
     → (σ : Sub Δ Γ)
     → (δ : Sub Θ Δ)
     → (t [ σ ]ᵗ) [ δ ]ᵗ ≡ t [ σ ∘ δ ]ᵗ
 
-{-# REWRITE Tm-id Tm-∘ #-}
+{-# REWRITE [id]ᵗ [∘]ᵗ #-}
 
 ------------------------------------------------------------------------
 -- Context extension
 
 postulate
-  wk : ∀ {Γ A}
+  wk : ∀ {n} {Γ : Con n} {A : Ty Γ}
     → Sub (Γ ▹ A) Γ
 
-  vz : ∀ {Γ A}
+  vz : ∀ {n} {Γ : Con n} {A : Ty Γ}
     → Tm (Γ ▹ A) (A [ wk ]ᵀ)
 
-  _,_ : ∀ {Γ Δ A}
+  _,_ : ∀ {n} {Γ Δ : Con n} {A : Ty Γ}
     → (σ : Sub Δ Γ)
     → Tm Δ (A [ σ ]ᵀ)
     → Sub Δ (Γ ▹ A)
-
-infixr 20 _,_
 
 ------------------------------------------------------------------------
 -- Comprehension equations
 
 postulate
-  ▹β₁ : ∀ {Γ Δ A}
+  ▹β₁ : ∀ {n} {Γ Δ : Con n} {A : Ty Γ}
     → (σ : Sub Δ Γ)
     → (t : Tm Δ (A [ σ ]ᵀ))
     → wk ∘ (σ , t) ≡ σ
@@ -133,7 +131,7 @@ postulate
 {-# REWRITE ▹β₁ #-}
 
 postulate
-  ▹β₂ : ∀ {Γ Δ A}
+  ▹β₂ : ∀ {n} {Γ Δ : Con n} {A : Ty Γ}
     → (σ : Sub Δ Γ)
     → (t : Tm Δ (A [ σ ]ᵀ))
     → vz [ σ , t ]ᵗ ≡ t
@@ -141,26 +139,26 @@ postulate
 {-# REWRITE ▹β₂ #-}
 
 postulate
-  ▹η : ∀ {Γ Δ A}
+  ▹η : ∀ {n} {Γ Δ : Con n} {A : Ty Γ}
     → (σ : Sub Δ (Γ ▹ A))
     → (wk ∘ σ , vz [ σ ]ᵗ) ≡ σ
 
 vs
-  : ∀ {Γ}
+  : ∀ {n} {Γ : Con n}
   → {A B : Ty Γ}
   → Tm Γ B
   → Tm (Γ ▹ A) (B [ wk ]ᵀ)
 vs b = b [ wk ]ᵗ
 
 wkᵀ
-  : ∀ {Γ}
+  : ∀ {n} {Γ : Con n}
   → {A : Ty Γ}
   → Ty Γ
   → Ty (Γ ▹ A)
 wkᵀ B = B [ wk ]ᵀ
 
 _↑_
-  : ∀ {Γ Δ}
+  : ∀ {n} {Γ Δ : Con n}
   → (σ : Sub Δ Γ)
   → (A : Ty Γ)
   → Sub (Δ ▹ A [ σ ]ᵀ) (Γ ▹ A)
@@ -168,7 +166,7 @@ _↑_
 
 postulate
   ,∘
-    : ∀ {Γ Δ Θ}
+    : ∀ {n} {Γ Δ Θ : Con n}
     → {A : Ty Γ}
     → (σ : Sub Δ Γ)
     → (a : Tm Δ (A [ σ ]ᵀ))
@@ -179,10 +177,11 @@ postulate
 {-# REWRITE ,∘ #-}
 
 postulate
-  []∘ : ∀ {Γ Δ}
+  []∘ : ∀ {n} {Γ Δ : Con n}
     → (σ : Sub Δ Γ)
     → {A : Ty Γ}
     → (B : Ty (Γ ▹ A))
     → (a : Tm Γ A)
     → B [ (id , a) ∘ σ ]ᵀ
     ≡ B [ (σ ↑ A) ∘ (id , a [ σ ]ᵗ) ]ᵀ
+
