@@ -1,17 +1,35 @@
 module HOTT.CwF.Empty where
 
-open import HOTT.Prelude hiding (_,_)
-open import HOTT.CwF.Base
-open import HOTT.CwF.Con
+open import HOTT.Prelude hiding (_,_; ⊥)
+open import HOTT.CwF.Cube
+open import HOTT.CwF.Sorts
 open import HOTT.CwF.Sub
+open import HOTT.CwF.Proj
+open import HOTT.CwF.Universe
 
 postulate
-  ⊥ : ∀ {Γ} → Ty Γ
+  ⊥ : ∀ {n}
+    → {Γ : Con n}
+    → Tm Γ U
 
-  ⊥[] : ∀ {Γ Δ} (σ : Sub Δ Γ)
-       → ⊥ [ σ ]ᵀ ≡ ⊥ 
+  ⊥[] : ∀ {n}
+    → {Γ Δ : Con n}
+    →(σ : Sub Δ Γ)
+    → ⊥ [ σ ]ᵗ ≡ ⊥ 
 
 {-# REWRITE ⊥[] #-}
 
 postulate
-  ⊥e : ∀ {Γ A} → Tm (Γ ▹ ⊥) A
+  ⊥⟨⟩ : ∀ {m n}
+    → {Γ : Con n}
+    → (i* : CubeMap m n)
+    → ⊥ {n} {Γ} ⟨ i* ⟩ᵗ
+    ≡ ⊥ {m} {Γ ⟨ i* ⟩ᶜ}
+
+{-# REWRITE ⊥⟨⟩ #-}
+
+postulate
+  ⊥e : ∀ {n}
+    → {Γ : Con n}
+    → (A : Ty (Γ ▹ El ⊥))
+    → Tm (Γ ▹ El ⊥) A

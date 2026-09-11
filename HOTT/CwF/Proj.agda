@@ -7,7 +7,6 @@ open import HOTT.CwF.Sorts
 open import HOTT.CwF.Sub
 
 infixl 30 _⟨_⟩ᶜ _⟨_⟩ᵀ
--- _⟨_⟩ᵗ _⟨_⟩ˢ
 
 postulate
   _⟨_⟩ᶜ : ∀ {m n}
